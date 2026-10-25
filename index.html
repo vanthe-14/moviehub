@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <meta name="description" content="MovieHub - Khám phá những bộ phim nổi bật.">
-  <title>MovieHub - Thế giới phim</title>
+  <meta name="description" content="TrailerHub - Khám phá những bộ phim nổi bật.">
+  <title>TrailerHub - Thế giới phim</title>
   <style>
     :root { color-scheme: dark; --red: #e50914; --bg: #08090d; --panel: #15161d; --muted: #a9abb8; --line: rgba(255,255,255,.1); --content: 1440px; }
     * { box-sizing: border-box; margin: 0; padding: 0; }
@@ -59,9 +59,6 @@
     .detail-copy p { color: #ddd; line-height: 1.7; margin-top: 18px; }
     .detail-copy .meta { line-height: 1.7; }
     .detail-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
-    .full-movie-panel { margin-top: 18px; padding: 18px; border: 1px solid rgba(255,255,255,.12); border-radius: 10px; background: rgba(255,255,255,.035); }
-    .full-movie-panel[hidden] { display: none !important; }
-    .full-movie-message { color: #d0d0da; font-size: 13px; line-height: 1.7; margin-bottom: 14px; }
     .trailer-player { display: none; width: 100%; margin-top: 22px; }
     .trailer-player.open { display: block; }
     .trailer-player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; background: #000; }
@@ -78,7 +75,7 @@
     footer { border-top: 1px solid #262630; text-align: center; padding: 24px; color: #9999a5; font-size: 13px; }
     @media (max-width: 560px) { header { align-items: flex-start; flex-direction: column; } nav { gap: 14px; } .hero { min-height: 340px; padding-top: 55px; padding-bottom: 55px; } .poster { height: 245px; } }
 
-    /* MovieHub modern streaming refresh */
+    /* TrailerHub modern streaming refresh */
     body { min-height: 100vh; background: radial-gradient(ellipse at 50% -20%, #24202a 0, #0b0b10 48%, #08090d 100%); font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; letter-spacing: .01em; }
     header { padding: 17px clamp(20px, 5vw, 76px); background: rgba(8,9,13,.82); backdrop-filter: blur(18px); border-bottom: 1px solid rgba(255,255,255,.07); }
     .logo { display: inline-flex; align-items: center; gap: 10px; font-size: 29px; letter-spacing: -1.3px; text-shadow: 0 0 26px rgba(229,9,20,.2); }
@@ -88,7 +85,7 @@
     nav a:hover { color: #fff; }
     .hero { position: relative; isolation: isolate; min-height: 490px; padding: clamp(56px, 8vw, 105px) clamp(20px, 7vw, 100px); overflow: hidden; background: radial-gradient(ellipse at 78% 32%, rgba(143,27,47,.72), transparent 34%), radial-gradient(ellipse at 88% 85%, rgba(40,63,113,.45), transparent 35%), linear-gradient(110deg, #101016 0%, #15131b 48%, #25131b 100%); }
     .hero::before { content: ""; position: absolute; z-index: -1; width: min(48vw, 590px); aspect-ratio: .72; right: 8%; top: 50%; transform: translateY(-43%) rotate(8deg); border: 1px solid rgba(255,255,255,.12); border-radius: 48% 48% 22px 22px; background: linear-gradient(160deg, rgba(255,255,255,.08), transparent 38%), radial-gradient(ellipse at 50% 30%, rgba(232,72,87,.48), transparent 38%), linear-gradient(145deg, rgba(72,37,60,.88), rgba(9,14,30,.96)); box-shadow: 0 30px 100px rgba(0,0,0,.45), inset 0 0 70px rgba(0,0,0,.32); mask-image: linear-gradient(to bottom, #000 0%, #000 66%, transparent 100%); }
-    .hero::after { content: "MOVIEHUB"; position: absolute; z-index: -1; right: 8%; top: 34%; color: rgba(255,255,255,.055); font-size: clamp(48px, 10vw, 150px); font-weight: 900; letter-spacing: -.08em; transform: rotate(-8deg); }
+    .hero::after { content: "TRAILERHUB"; position: absolute; z-index: -1; right: 8%; top: 34%; color: rgba(255,255,255,.055); font-size: clamp(48px, 10vw, 150px); font-weight: 900; letter-spacing: -.08em; transform: rotate(-8deg); }
     .hero-content { max-width: 680px; }
     .eyebrow { display: inline-flex; align-items: center; gap: 9px; color: #ff777e; font-size: 11px; letter-spacing: 2.5px; }
     .eyebrow::before { content: ""; width: 24px; height: 2px; background: var(--red); }
@@ -141,7 +138,7 @@
     footer { border-color: rgba(255,255,255,.08); color: #858795; background: rgba(0,0,0,.12); }
     @media (min-width: 1500px) { .movies { grid-template-columns: repeat(6, minmax(0, 1fr)); } }
     @media (max-width: 900px) { .hero { min-height: 430px; } .hero::before { right: -5%; opacity: .65; } .movies { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); gap: 17px 13px; } .section-heading { align-items: flex-start; flex-direction: column; } .section-tools { width: 100%; } }
-    @media (max-width: 600px) { header { align-items: center; flex-direction: row; gap: 12px; padding: 14px 18px; } .logo { font-size: 24px; } .logo::before { width: 28px; height: 28px; } nav { justify-content: flex-end; gap: 11px; } nav a { font-size: 11px; } nav a:last-child { display: none; } .hero { min-height: 420px; padding: 48px 20px 42px; } .hero::before { width: 70vw; right: -22%; top: 26%; opacity: .4; } .hero::after { right: -4%; top: 22%; font-size: 18vw; } h1 { max-width: 500px; font-size: clamp(40px, 12vw, 58px); } .hero p { max-width: 440px; font-size: 14px; } .hero-search { margin-top: 25px; } main { padding: 30px 16px 48px; } .section-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; } .genre-filter { min-width: 0; width: 100%; grid-column: 1 / -1; } #favoritesFilter { width: 100%; } .section-tools > span { grid-column: 1 / -1; padding: 2px 0 0; } .movies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 10px; } .poster { aspect-ratio: 2 / 3; } .movie-info { padding: 11px 10px 13px; } .movie h3 { font-size: 12px; min-height: 36px; } .description { font-size: 11px; min-height: 50px; } .favorite-toggle { width: 34px; height: 34px; top: 8px; right: 8px; font-size: 20px; } .detail-overlay { padding: 10px; align-items: flex-start; } .detail-dialog { display: block; max-height: calc(100dvh - 20px); padding: 16px; border-radius: 14px; } .detail-poster { display: block; width: min(170px, 56%); max-height: 240px; margin: 28px auto 20px; } .detail-copy { padding: 0; } .detail-copy h2 { padding-right: 20px; font-size: 27px; } .detail-copy p { font-size: 13px; } .detail-actions { display: grid; grid-template-columns: 1fr; } .detail-actions .button, .detail-actions .button-secondary { width: 100%; } .full-movie-panel .button-secondary { width: 100%; text-align: center; } .trailer-player { margin-top: 18px; } }
+    @media (max-width: 600px) { header { align-items: center; flex-direction: row; gap: 12px; padding: 14px 18px; } .logo { font-size: 24px; } .logo::before { width: 28px; height: 28px; } nav { justify-content: flex-end; gap: 11px; } nav a { font-size: 11px; } nav a:last-child { display: none; } .hero { min-height: 420px; padding: 48px 20px 42px; } .hero::before { width: 70vw; right: -22%; top: 26%; opacity: .4; } .hero::after { right: -4%; top: 22%; font-size: 18vw; } h1 { max-width: 500px; font-size: clamp(40px, 12vw, 58px); } .hero p { max-width: 440px; font-size: 14px; } .hero-search { margin-top: 25px; } main { padding: 30px 16px 48px; } .section-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; } .genre-filter { min-width: 0; width: 100%; grid-column: 1 / -1; } #favoritesFilter { width: 100%; } .section-tools > span { grid-column: 1 / -1; padding: 2px 0 0; } .movies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 10px; } .poster { aspect-ratio: 2 / 3; } .movie-info { padding: 11px 10px 13px; } .movie h3 { font-size: 12px; min-height: 36px; } .description { font-size: 11px; min-height: 50px; } .favorite-toggle { width: 34px; height: 34px; top: 8px; right: 8px; font-size: 20px; } .detail-overlay { padding: 10px; align-items: flex-start; } .detail-dialog { display: block; max-height: calc(100dvh - 20px); padding: 16px; border-radius: 14px; } .detail-poster { display: block; width: min(170px, 56%); max-height: 240px; margin: 28px auto 20px; } .detail-copy { padding: 0; } .detail-copy h2 { padding-right: 20px; font-size: 27px; } .detail-copy p { font-size: 13px; } .detail-actions { display: grid; grid-template-columns: 1fr; } .detail-actions .button, .detail-actions .button-secondary { width: 100%; } .trailer-player { margin-top: 18px; } }
     @media (max-width: 360px) { header { align-items: flex-start; flex-direction: column; } nav { justify-content: flex-start; } .movies { gap: 10px 8px; } .movie-info { padding: 10px 8px; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
 
@@ -172,7 +169,7 @@
 </head>
 <body>
   <header>
-    <a class="logo" href="#" style="text-decoration:none">MovieHub</a>
+    <a class="logo" href="#" style="text-decoration:none">TrailerHub</a>
     <nav aria-label="Điều hướng chính">
       <a href="#">Trang chủ</a>
       <a href="#movies">Phim nổi bật</a>
@@ -289,7 +286,7 @@
   <div class="detail-overlay" id="detailOverlay" role="presentation">
     <section class="detail-dialog" id="detailDialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
       <div class="detail-backdrop" aria-hidden="true"><img id="detailBackdropImage" src="" alt=""></div>
-      <div class="detail-kicker"><span class="detail-kicker-dot"></span> MOVIEHUB · CHI TIẾT PHIM</div>
+      <div class="detail-kicker"><span class="detail-kicker-dot"></span> TRAILERHUB · CHI TIẾT PHIM</div>
       <button class="detail-close" id="detailClose" type="button" aria-label="Đóng cửa sổ chi tiết">×</button>
       <img class="detail-poster" id="detailPoster" src="" alt="">
       <div class="detail-copy">
@@ -300,12 +297,8 @@
         <p id="detailDescription"></p>
         <div class="detail-actions">
           <button class="button" id="trailerLink" type="button">Xem trailer ▶</button>
-          <button class="button-secondary" id="fullMovieButton" type="button">Xem phim đầy đủ ▶</button>
+
           <button class="button-secondary" id="detailBack" type="button">Quay lại danh sách</button>
-        </div>
-        <div class="full-movie-panel" id="fullMoviePanel" hidden>
-          <p class="full-movie-message" id="fullMovieMessage">Chưa có nguồn phát phim đầy đủ được cấp phép để nhúng trực tiếp cho phim này.</p>
-          <a class="button-secondary" id="fullMovieLink" href="https://www.justwatch.com/vn" target="_blank" rel="noopener noreferrer">Tìm nơi xem chính thức ↗</a>
         </div>
         <div class="trailer-player" id="trailerPlayer">
           <iframe id="trailerFrame" title="Trailer phim" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
@@ -315,7 +308,7 @@
     </section>
   </div>
 
-  <footer id="about">© 2026 MovieHub · Dự án website phim học tập · Poster tham khảo từ TMDB</footer>
+  <footer id="about">© 2026 TrailerHub · Dự án website phim học tập · Poster tham khảo từ TMDB</footer>
   <script>
     const searchInput = document.getElementById("movieSearch");
     const cards = Array.from(document.querySelectorAll(".movie"));
@@ -329,10 +322,6 @@
     const detailTag = document.getElementById("detailTag");
     const detailDescription = document.getElementById("detailDescription");
     const trailerLink = document.getElementById("trailerLink");
-    const fullMovieLink = document.getElementById("fullMovieLink");
-    const fullMovieButton = document.getElementById("fullMovieButton");
-    const fullMoviePanel = document.getElementById("fullMoviePanel");
-    const fullMovieMessage = document.getElementById("fullMovieMessage");
     const trailerPlayer = document.getElementById("trailerPlayer");
     const trailerFrame = document.getElementById("trailerFrame");
     const detailClose = document.getElementById("detailClose");
@@ -386,16 +375,13 @@
         detailBackdropImage.removeAttribute("src");
       }
       trailerPlayer.classList.remove("open");
-      fullMoviePanel.hidden = true;
       trailerFrame.src = "";
       trailerFrame.style.display = "block";
       const trailerNote = trailerPlayer.querySelector(".trailer-note");
       if (trailerNote) trailerNote.textContent = "Video được nhúng từ YouTube. Bạn có thể phát hoặc tạm dừng ngay tại đây.";
       trailerLink.textContent = "Xem trailer ▶";
       trailerLink.dataset.title = title;
-      fullMovieLink.href = "https://www.justwatch.com/vn/search?q=" + encodeURIComponent(title);
-      fullMovieLink.setAttribute("aria-label", "Tìm dịch vụ xem phim có bản quyền cho " + title);
-      fullMovieMessage.textContent = "Hiện MovieHub chưa có luồng phim đầy đủ được cấp phép để phát trực tiếp cho “" + title + "”. Bạn có thể tra cứu dịch vụ phát hành chính thức bên dưới.";
+      fullMovieMessage.textContent = "Hiện TrailerHub chưa có luồng phim đầy đủ được cấp phép để phát trực tiếp cho “" + title + "”. Bạn có thể tra cứu dịch vụ phát hành chính thức bên dưới.";
       detailOverlay.classList.add("open");
       document.body.style.overflow = "hidden";
       detailClose.focus();
@@ -406,7 +392,6 @@
       detailOverlay.classList.remove("open");
       trailerFrame.src = "";
       trailerPlayer.classList.remove("open");
-      fullMoviePanel.hidden = true;
       document.body.style.overflow = "";
       if (lastFocusedCard) lastFocusedCard.focus();
     }
@@ -424,16 +409,7 @@
         }
       });
     });
-    fullMovieButton.addEventListener("click", function () {
-      fullMoviePanel.hidden = !fullMoviePanel.hidden;
-      if (!fullMoviePanel.hidden) {
-        trailerPlayer.classList.remove("open");
-        trailerFrame.src = "";
-        fullMoviePanel.scrollIntoView({ behavior: "smooth", block: "nearest" });
-      }
-    });
     trailerLink.addEventListener("click", function () {
-      fullMoviePanel.hidden = true;
       const title = trailerLink.dataset.title || detailTitle.textContent;
       const videoId = trailerIds[title];
       trailerPlayer.classList.add("open");
@@ -442,12 +418,12 @@
         trailerFrame.style.display = "block";
         trailerFrame.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0";
         const oldNote = trailerPlayer.querySelector(".trailer-note");
-        if (oldNote) oldNote.textContent = "Trailer đang phát ngay trên MovieHub.";
+        if (oldNote) oldNote.textContent = "Trailer đang phát ngay trên TrailerHub.";
       } else {
         trailerFrame.src = "";
         trailerFrame.style.display = "none";
         let note = trailerPlayer.querySelector(".trailer-note");
-        if (note) note.textContent = "Trailer của phim này chưa được tích hợp trình phát. Mình sẽ bổ sung video phù hợp; bạn vẫn ở lại MovieHub.";
+        if (note) note.textContent = "Trailer của phim này chưa được tích hợp trình phát. Mình sẽ bổ sung video phù hợp; bạn vẫn ở lại TrailerHub.";
       }
     });
     detailClose.addEventListener("click", closeMovieDetails);
@@ -461,7 +437,7 @@
 
     const favoritesFilter = document.getElementById("favoritesFilter");
     const genreFilter = document.getElementById("genreFilter");
-    const favoriteStorageKey = "moviehub-favorites-v1";
+    const favoriteStorageKey = "trailerhub-favorites-v1";
     let favoriteTitles = new Set();
     let showFavoritesOnly = false;
 
