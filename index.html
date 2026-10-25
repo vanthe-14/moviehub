@@ -38,6 +38,13 @@
     .poster img { display: block; width: 100%; height: 100%; object-fit: cover; transition: transform .35s; }
     .movie:hover .poster img { transform: scale(1.045); }
     .poster-fallback { display: none; position: absolute; inset: 0; place-items: center; padding: 15px; text-align: center; font-size: 20px; font-weight: 800; line-height: 1.2; }
+    .favorite-toggle { position: absolute; z-index: 2; top: 10px; right: 10px; display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(255,255,255,.3); border-radius: 50%; background: rgba(10,10,15,.78); color: #fff; font-size: 22px; line-height: 1; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,.3); }
+    .favorite-toggle:hover { transform: scale(1.08); background: rgba(35,35,45,.96); }
+    .favorite-toggle[aria-pressed="true"] { color: #ff5260; border-color: #ff5260; }
+    .favorite-toggle:focus-visible, #favoritesFilter:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
+    .section-tools { display: flex; align-items: center; justify-content: flex-end; gap: 14px; flex-wrap: wrap; }
+    #favoritesFilter.active { border-color: #ff5260; color: #ff8b93; }
+    .movie[hidden] { display: none !important; }
     .movie-info { padding: 13px; }
     .movie { cursor: pointer; }
     .movie:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
@@ -92,7 +99,10 @@
   <main id="movies">
     <div class="section-heading">
       <h2>Phim nổi bật</h2>
-      <span id="searchCount" aria-live="polite">Hiển thị 16 bộ phim</span>
+      <div class="section-tools">
+        <button class="button-secondary" id="favoritesFilter" type="button" aria-pressed="false">♡ Phim yêu thích (0)</button>
+        <span id="searchCount" aria-live="polite">Hiển thị 16 bộ phim</span>
+      </div>
     </div>
     <div class="movies" id="movieList">
       <article class="movie">
@@ -291,17 +301,95 @@
       if (event.key === "Escape" && detailOverlay.classList.contains("open")) closeMovieDetails();
     });
 
-    searchInput.addEventListener("input", function () {
+    const favoritesFilter = document.getElementById("favoritesFilter");
+    const favoriteStorageKey = "moviehub-favorites-v1";
+    let favoriteTitles = new Set();
+    let showFavoritesOnly = false;
+
+    try {
+      const savedFavorites = JSON.parse(localStorage.getItem(favoriteStorageKey) || "[]");
+      if (Array.isArray(savedFavorites)) favoriteTitles = new Set(savedFavorites.filter(function (title) { return typeof title === "string"; }));
+    } catch (error) {
+      // Website vẫn hoạt động nếu trình duyệt chặn localStorage.
+    }
+
+    function saveFavorites() {
+      try { localStorage.setItem(favoriteStorageKey, JSON.stringify(Array.from(favoriteTitles))); }
+      catch (error) { /* Danh sách vẫn được giữ trong phiên hiện tại. */ }
+    }
+
+    function updateFavoritesUI() {
+      cards.forEach(function (card) {
+        const title = card.querySelector("h3")?.textContent.trim() || "";
+        const isFavorite = favoriteTitles.has(title);
+        const button = card.querySelector(".favorite-toggle");
+        if (button) {
+          button.setAttribute("aria-pressed", String(isFavorite));
+          button.setAttribute("aria-label", (isFavorite ? "Bỏ yêu thích: " : "Thêm yêu thích: ") + title);
+          button.textContent = isFavorite ? "♥" : "♡";
+          button.title = isFavorite ? "Bỏ khỏi danh sách yêu thích" : "Thêm vào danh sách yêu thích";
+        }
+      });
+      favoritesFilter.textContent = (showFavoritesOnly ? "♥ Đang xem yêu thích (" : "♡ Phim yêu thích (") + favoriteTitles.size + ")";
+      favoritesFilter.classList.toggle("active", showFavoritesOnly);
+      favoritesFilter.setAttribute("aria-pressed", String(showFavoritesOnly));
+      applyMovieFilters();
+    }
+
+    function applyMovieFilters() {
       const query = searchInput.value.trim().toLocaleLowerCase("vi");
       let visible = 0;
       cards.forEach(function (card) {
-        const match = card.textContent.toLocaleLowerCase("vi").includes(query);
-        card.hidden = !match;
-        if (match) visible++;
+        const title = card.querySelector("h3")?.textContent.trim() || "";
+        const matchesSearch = card.textContent.toLocaleLowerCase("vi").includes(query);
+        const matchesFavorite = !showFavoritesOnly || favoriteTitles.has(title);
+        const matches = matchesSearch && matchesFavorite;
+        card.hidden = !matches;
+        if (matches) visible++;
       });
-      count.textContent = query ? "Tìm thấy " + visible + " / " + cards.length + " bộ phim" : "Hiển thị " + cards.length + " bộ phim";
+      if (showFavoritesOnly) {
+        count.textContent = "Yêu thích: hiển thị " + visible + " / " + favoriteTitles.size + " phim";
+      } else if (query) {
+        count.textContent = "Tìm thấy " + visible + " / " + cards.length + " bộ phim";
+      } else {
+        count.textContent = "Hiển thị " + visible + " / " + cards.length + " bộ phim";
+      }
+      empty.textContent = showFavoritesOnly && favoriteTitles.size === 0
+        ? "Bạn chưa có phim yêu thích. Nhấn trái tim trên poster để thêm phim nhé!"
+        : showFavoritesOnly
+          ? "Không có phim yêu thích phù hợp với từ khóa này."
+          : "Không tìm thấy phim phù hợp. Hãy thử từ khóa khác nhé!";
       empty.style.display = visible === 0 ? "block" : "none";
+    }
+
+    cards.forEach(function (card) {
+      const poster = card.querySelector(".poster");
+      const title = card.querySelector("h3")?.textContent.trim() || "Phim";
+      const favoriteButton = document.createElement("button");
+      favoriteButton.type = "button";
+      favoriteButton.className = "favorite-toggle";
+      favoriteButton.textContent = "♡";
+      favoriteButton.setAttribute("aria-pressed", "false");
+      favoriteButton.setAttribute("aria-label", "Thêm yêu thích: " + title);
+      favoriteButton.title = "Thêm vào danh sách yêu thích";
+      favoriteButton.addEventListener("click", function (event) {
+        event.preventDefault();
+        event.stopPropagation();
+        if (favoriteTitles.has(title)) favoriteTitles.delete(title);
+        else favoriteTitles.add(title);
+        saveFavorites();
+        updateFavoritesUI();
+      });
+      poster.appendChild(favoriteButton);
     });
+
+    favoritesFilter.addEventListener("click", function () {
+      showFavoritesOnly = !showFavoritesOnly;
+      updateFavoritesUI();
+    });
+
+    searchInput.addEventListener("input", applyMovieFilters);
+    updateFavoritesUI();
   </script>
 </body>
 </html>
