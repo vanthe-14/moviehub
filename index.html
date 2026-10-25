@@ -141,6 +141,30 @@
     @media (max-width: 600px) { header { align-items: center; flex-direction: row; gap: 12px; padding: 14px 18px; } .logo { font-size: 24px; } .logo::before { width: 28px; height: 28px; } nav { justify-content: flex-end; gap: 11px; } nav a { font-size: 11px; } nav a:last-child { display: none; } .hero { min-height: 420px; padding: 48px 20px 42px; } .hero::before { width: 70vw; right: -22%; top: 26%; opacity: .4; } .hero::after { right: -4%; top: 22%; font-size: 18vw; } h1 { max-width: 500px; font-size: clamp(40px, 12vw, 58px); } .hero p { max-width: 440px; font-size: 14px; } .hero-search { margin-top: 25px; } main { padding: 30px 16px 48px; } .section-tools { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; } .genre-filter { min-width: 0; width: 100%; grid-column: 1 / -1; } #favoritesFilter { width: 100%; } .section-tools > span { grid-column: 1 / -1; padding: 2px 0 0; } .movies { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 13px 10px; } .poster { aspect-ratio: 2 / 3; } .movie-info { padding: 11px 10px 13px; } .movie h3 { font-size: 12px; min-height: 36px; } .description { font-size: 11px; min-height: 50px; } .favorite-toggle { width: 34px; height: 34px; top: 8px; right: 8px; font-size: 20px; } .detail-overlay { padding: 10px; align-items: flex-start; } .detail-dialog { display: block; max-height: calc(100dvh - 20px); padding: 16px; border-radius: 14px; } .detail-poster { display: block; width: min(170px, 56%); max-height: 240px; margin: 28px auto 20px; } .detail-copy { padding: 0; } .detail-copy h2 { padding-right: 20px; font-size: 27px; } .detail-copy p { font-size: 13px; } .detail-actions { display: grid; grid-template-columns: 1fr; } .detail-actions .button, .detail-actions .button-secondary { width: 100%; } .trailer-player { margin-top: 18px; } }
     @media (max-width: 360px) { header { align-items: flex-start; flex-direction: column; } nav { justify-content: flex-start; } .movies { gap: 10px 8px; } .movie-info { padding: 10px 8px; } }
     @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; } }
+
+    /* Cinematic movie detail experience */
+    .detail-dialog { isolation: isolate; width: min(1080px, 100%); grid-template-columns: minmax(210px, 300px) minmax(0, 1fr); align-items: end; gap: 28px 38px; padding: 190px clamp(22px, 4vw, 46px) 38px; overflow: auto; background: linear-gradient(180deg, #17171f 0%, #14151c 100%); }
+    .detail-backdrop { position: absolute; z-index: -2; inset: 0 0 auto; height: 360px; overflow: hidden; background: radial-gradient(ellipse at 70% 15%, #7b2734, transparent 52%), #191923; }
+    .detail-backdrop img { width: 100%; height: 100%; object-fit: cover; object-position: center 28%; opacity: .5; filter: saturate(.85); }
+    .detail-backdrop::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgba(12,12,17,.16) 0%, rgba(18,18,25,.36) 32%, #17171f 100%), linear-gradient(90deg, rgba(10,10,15,.25), transparent 70%); }
+    .detail-kicker { position: absolute; top: 24px; left: clamp(22px, 4vw, 46px); display: flex; align-items: center; gap: 9px; color: #ffd7da; font-size: 10px; font-weight: 800; letter-spacing: 2px; }
+    .detail-kicker-dot { width: 7px; height: 7px; border-radius: 50%; background: #f21a28; box-shadow: 0 0 14px rgba(242,26,40,.8); }
+    .detail-poster { position: relative; z-index: 1; width: 100%; min-height: 0; max-height: none; aspect-ratio: 2 / 3; border: 1px solid rgba(255,255,255,.16); border-radius: 12px; box-shadow: 0 20px 54px rgba(0,0,0,.48); }
+    .detail-copy { position: relative; z-index: 1; align-self: end; padding: 0 0 4px; }
+    .detail-copy > .eyebrow { margin-bottom: 12px; }
+    .detail-copy h2 { font-size: clamp(29px, 4vw, 46px); line-height: 1.08; margin-bottom: 16px; text-wrap: balance; }
+    .detail-copy .meta { display: flex; flex-wrap: wrap; gap: 7px; color: #e0e0e9; font-size: 12px; }
+    #detailMeta { display: inline-flex; align-items: center; width: fit-content; padding: 7px 10px; border: 1px solid rgba(255,255,255,.15); border-radius: 6px; background: rgba(10,10,15,.38); backdrop-filter: blur(8px); }
+    #detailTag .tag { margin-top: 11px; }
+    .detail-copy p { max-width: 600px; font-size: 14px; line-height: 1.85; margin-top: 18px; }
+    .detail-actions { margin-top: 25px; gap: 10px; }
+    #trailerLink { border: 0; cursor: pointer; }
+    .detail-actions .button-secondary { min-height: 45px; }
+    .trailer-player { grid-column: 1 / -1; position: relative; z-index: 1; margin-top: 0; }
+    .trailer-player iframe { max-height: 480px; }
+    .trailer-note { font-size: 11px; }
+    @media (max-width: 700px) { .detail-dialog { display: grid; grid-template-columns: 110px minmax(0, 1fr); align-items: start; gap: 16px; padding: 150px 18px 24px; max-height: calc(100dvh - 20px); } .detail-backdrop { height: 300px; } .detail-kicker { top: 18px; left: 18px; font-size: 9px; } .detail-close { top: 12px; right: 12px; } .detail-poster { width: 110px; height: 165px; min-height: 0; margin: 0; border-radius: 8px; } .detail-copy { padding: 2px 0 0; } .detail-copy > .eyebrow { font-size: 9px; letter-spacing: 1.4px; margin-bottom: 8px; } .detail-copy h2 { font-size: clamp(20px, 5vw, 27px); padding-right: 0; margin-bottom: 10px; } #detailMeta { font-size: 10px; padding: 6px 7px; } #detailTag .tag { margin-top: 7px; font-size: 9px; } .detail-copy p { grid-column: 1 / -1; font-size: 12px; line-height: 1.7; margin-top: 15px; } .detail-actions { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin-top: 18px; } .detail-actions .button, .detail-actions .button-secondary { width: 100%; min-height: 42px; padding: 10px 12px; font-size: 12px; } .trailer-player { grid-column: 1 / -1; margin-top: 4px; } }
+    @media (max-width: 390px) { .detail-dialog { grid-template-columns: 88px minmax(0, 1fr); gap: 12px; padding-left: 14px; padding-right: 14px; } .detail-poster { width: 88px; height: 132px; } .detail-copy h2 { font-size: 20px; } .detail-copy p { font-size: 11px; } }
   </style>
 </head>
 <body>
@@ -261,6 +285,8 @@
 
   <div class="detail-overlay" id="detailOverlay" role="presentation">
     <section class="detail-dialog" id="detailDialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <div class="detail-backdrop" aria-hidden="true"><img id="detailBackdropImage" src="" alt=""></div>
+      <div class="detail-kicker"><span class="detail-kicker-dot"></span> MOVIEHUB · CHI TIẾT PHIM</div>
       <button class="detail-close" id="detailClose" type="button" aria-label="Đóng cửa sổ chi tiết">×</button>
       <img class="detail-poster" id="detailPoster" src="" alt="">
       <div class="detail-copy">
@@ -289,6 +315,7 @@
     const empty = document.getElementById("noResults");
     const detailOverlay = document.getElementById("detailOverlay");
     const detailPoster = document.getElementById("detailPoster");
+    const detailBackdropImage = document.getElementById("detailBackdropImage");
     const detailTitle = document.getElementById("detailTitle");
     const detailMeta = document.getElementById("detailMeta");
     const detailTag = document.getElementById("detailTag");
@@ -327,14 +354,17 @@
       }
       if (poster && poster.getAttribute("src")) {
         detailPoster.src = poster.getAttribute("src");
+        detailBackdropImage.src = poster.getAttribute("src");
         detailPoster.alt = poster.alt || "Poster " + title;
         detailPoster.style.display = poster.style.display === "none" ? "none" : "block";
       } else {
         detailPoster.removeAttribute("src");
+        detailBackdropImage.removeAttribute("src");
         detailPoster.style.display = "none";
       }
       if (fallback && fallback.style.display === "grid") {
         detailPoster.style.display = "none";
+        detailBackdropImage.removeAttribute("src");
       }
       trailerPlayer.classList.remove("open");
       trailerFrame.src = "";
