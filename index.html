@@ -331,7 +331,10 @@
       "Dune: Part Two": "Way9Dexny3w",
       "Inside Out 2": "LEjhY15eCx0",
       "The Wild Robot": "njPNg0A9VpY",
-      "Trò Chơi Ảo Giác: Ares (Tron: Ares)": "jp75XWJ3wfk"
+      "Trò Chơi Ảo Giác: Ares (Tron: Ares)": "jp75XWJ3wfk",
+      "Spider-Man: Brand New Day": "62bIsvRcPv0",
+      "Câu Chuyện Đồ Chơi 5 (Toy Story 5)": "FJiwQyXuHUA",
+      "Ám Hà Truyện (Tales of Dark River)": "VIWF2GkZxeI"
     };
     let lastFocusedCard = null;
 
@@ -368,6 +371,9 @@
       }
       trailerPlayer.classList.remove("open");
       trailerFrame.src = "";
+      trailerFrame.style.display = "block";
+      const trailerNote = trailerPlayer.querySelector(".trailer-note");
+      if (trailerNote) trailerNote.textContent = "Video được nhúng từ YouTube. Bạn có thể phát hoặc tạm dừng ngay tại đây.";
       trailerLink.textContent = "Xem trailer ▶";
       trailerLink.dataset.title = title;
       detailOverlay.classList.add("open");
@@ -400,12 +406,18 @@
     trailerLink.addEventListener("click", function () {
       const title = trailerLink.dataset.title || detailTitle.textContent;
       const videoId = trailerIds[title];
+      trailerPlayer.classList.add("open");
+      trailerPlayer.scrollIntoView({ behavior: "smooth", block: "nearest" });
       if (videoId) {
-        trailerFrame.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0&end=45";
-        trailerPlayer.classList.add("open");
-        trailerPlayer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+        trailerFrame.style.display = "block";
+        trailerFrame.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0";
+        const oldNote = trailerPlayer.querySelector(".trailer-note");
+        if (oldNote) oldNote.textContent = "Trailer đang phát ngay trên MovieHub.";
       } else {
-        window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(title + " official trailer"), "_blank", "noopener,noreferrer");
+        trailerFrame.src = "";
+        trailerFrame.style.display = "none";
+        let note = trailerPlayer.querySelector(".trailer-note");
+        if (note) note.textContent = "Trailer của phim này chưa được tích hợp trình phát. Mình sẽ bổ sung video phù hợp; bạn vẫn ở lại MovieHub.";
       }
     });
     detailClose.addEventListener("click", closeMovieDetails);
