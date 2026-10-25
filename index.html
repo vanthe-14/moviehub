@@ -39,6 +39,22 @@
     .movie:hover .poster img { transform: scale(1.045); }
     .poster-fallback { display: none; position: absolute; inset: 0; place-items: center; padding: 15px; text-align: center; font-size: 20px; font-weight: 800; line-height: 1.2; }
     .movie-info { padding: 13px; }
+    .movie { cursor: pointer; }
+    .movie:focus-visible { outline: 3px solid var(--red); outline-offset: 3px; }
+    .detail-overlay { position: fixed; inset: 0; z-index: 20; display: none; align-items: center; justify-content: center; padding: 22px; background: rgba(0,0,0,.82); overflow-y: auto; }
+    .detail-overlay.open { display: flex; }
+    .detail-dialog { position: relative; width: min(850px, 100%); max-height: 90vh; overflow-y: auto; display: grid; grid-template-columns: minmax(180px, 280px) 1fr; gap: 28px; padding: 28px; border: 1px solid #383842; border-radius: 14px; background: #17171f; box-shadow: 0 20px 80px rgba(0,0,0,.5); }
+    .detail-poster { width: 100%; min-height: 260px; max-height: 420px; object-fit: cover; border-radius: 8px; background: #292932; }
+    .detail-copy { align-self: center; padding-top: 22px; }
+    .detail-copy h2 { font-size: clamp(24px, 4vw, 34px); line-height: 1.2; margin-bottom: 14px; }
+    .detail-copy p { color: #ddd; line-height: 1.7; margin-top: 18px; }
+    .detail-copy .meta { line-height: 1.7; }
+    .detail-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .button-secondary { display: inline-block; padding: 12px 18px; border: 1px solid #656572; border-radius: 5px; color: #fff; text-decoration: none; font-weight: 700; background: #24242e; cursor: pointer; }
+    .button-secondary:hover { background: #343440; }
+    .detail-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border: 0; border-radius: 50%; background: #30303a; color: white; font-size: 25px; cursor: pointer; }
+    .detail-close:hover { background: var(--red); }
+    @media (max-width: 600px) { .detail-dialog { grid-template-columns: 1fr; gap: 16px; padding: 18px; } .detail-poster { width: min(220px, 75%); max-height: 300px; margin: 14px auto 0; } .detail-copy { padding-top: 0; } }
     .movie h3 { font-size: 15px; line-height: 1.4; margin-bottom: 8px; }
     .description { color: #d0d0d8; font-size: 12px; line-height: 1.55; margin-top: 9px; }
     .meta { color: var(--muted); font-size: 12px; }
@@ -143,12 +159,103 @@
     <p class="no-results" id="noResults">Không tìm thấy phim phù hợp. Hãy thử từ khóa khác nhé!</p>
   </main>
 
+  <div class="detail-overlay" id="detailOverlay" role="presentation">
+    <section class="detail-dialog" id="detailDialog" role="dialog" aria-modal="true" aria-labelledby="detailTitle">
+      <button class="detail-close" id="detailClose" type="button" aria-label="Đóng cửa sổ chi tiết">×</button>
+      <img class="detail-poster" id="detailPoster" src="" alt="">
+      <div class="detail-copy">
+        <div class="eyebrow">Thông tin phim</div>
+        <h2 id="detailTitle"></h2>
+        <div class="meta" id="detailMeta"></div>
+        <div id="detailTag"></div>
+        <p id="detailDescription"></p>
+        <div class="detail-actions">
+          <a class="button" id="trailerLink" href="#" target="_blank" rel="noopener noreferrer">Tìm trailer ▶</a>
+          <button class="button-secondary" id="detailBack" type="button">Quay lại danh sách</button>
+        </div>
+      </div>
+    </section>
+  </div>
+
   <footer id="about">© 2026 MovieHub · Dự án website phim học tập · Poster tham khảo từ TMDB</footer>
   <script>
     const searchInput = document.getElementById("movieSearch");
     const cards = Array.from(document.querySelectorAll(".movie"));
     const count = document.getElementById("searchCount");
     const empty = document.getElementById("noResults");
+    const detailOverlay = document.getElementById("detailOverlay");
+    const detailPoster = document.getElementById("detailPoster");
+    const detailTitle = document.getElementById("detailTitle");
+    const detailMeta = document.getElementById("detailMeta");
+    const detailTag = document.getElementById("detailTag");
+    const detailDescription = document.getElementById("detailDescription");
+    const trailerLink = document.getElementById("trailerLink");
+    const detailClose = document.getElementById("detailClose");
+    let lastFocusedCard = null;
+
+    function openMovieDetails(card) {
+      const poster = card.querySelector(".poster img");
+      const fallback = card.querySelector(".poster-fallback");
+      const title = card.querySelector("h3")?.textContent.trim() || "Phim";
+      const meta = card.querySelector(".meta")?.textContent.trim() || "";
+      const description = card.querySelector(".description")?.textContent.trim() || "Thông tin phim đang được cập nhật.";
+      const tag = card.querySelector(".tag")?.textContent.trim() || "";
+      detailTitle.textContent = title;
+      detailMeta.textContent = meta;
+      detailDescription.textContent = description;
+      detailTag.innerHTML = "";
+      if (tag) {
+        const tagElement = document.createElement("span");
+        tagElement.className = "tag";
+        tagElement.textContent = tag;
+        detailTag.appendChild(tagElement);
+      }
+      if (poster && poster.getAttribute("src")) {
+        detailPoster.src = poster.getAttribute("src");
+        detailPoster.alt = poster.alt || "Poster " + title;
+        detailPoster.style.display = poster.style.display === "none" ? "none" : "block";
+      } else {
+        detailPoster.removeAttribute("src");
+        detailPoster.style.display = "none";
+      }
+      if (fallback && fallback.style.display === "grid") {
+        detailPoster.style.display = "none";
+      }
+      trailerLink.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(title + " trailer");
+      detailOverlay.classList.add("open");
+      document.body.style.overflow = "hidden";
+      detailClose.focus();
+      lastFocusedCard = card;
+    }
+
+    function closeMovieDetails() {
+      detailOverlay.classList.remove("open");
+      document.body.style.overflow = "";
+      if (lastFocusedCard) lastFocusedCard.focus();
+    }
+
+    cards.forEach(function (card) {
+      card.setAttribute("tabindex", "0");
+      card.setAttribute("role", "button");
+      card.setAttribute("aria-haspopup", "dialog");
+      card.addEventListener("click", function () { openMovieDetails(card); });
+      card.addEventListener("keydown", function (event) {
+        if (event.target !== card) return;
+        if (event.key === "Enter" || event.key === " ") {
+          event.preventDefault();
+          openMovieDetails(card);
+        }
+      });
+    });
+    detailClose.addEventListener("click", closeMovieDetails);
+    document.getElementById("detailBack").addEventListener("click", closeMovieDetails);
+    detailOverlay.addEventListener("click", function (event) {
+      if (event.target === detailOverlay) closeMovieDetails();
+    });
+    document.addEventListener("keydown", function (event) {
+      if (event.key === "Escape" && detailOverlay.classList.contains("open")) closeMovieDetails();
+    });
+
     searchInput.addEventListener("input", function () {
       const query = searchInput.value.trim().toLocaleLowerCase("vi");
       let visible = 0;
