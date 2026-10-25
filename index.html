@@ -206,7 +206,7 @@
       "Inception": "YoHD9XEInc0",
       "Spider-Man: Across the Spider-Verse": "g4Hbz2jLxvQ",
       "Dune: Part Two": "Way9Dexny3w",
-      "Inside Out 2": "VWavstJyd配",
+      "Inside Out 2": "LEjhY15eCx0",
       "The Wild Robot": "njPNg0A9VpY",
       "Trò Chơi Ảo Giác: Ares (Tron: Ares)": "jp75XWJ3wfk"
     };
@@ -275,7 +275,7 @@
       const title = trailerLink.dataset.title || detailTitle.textContent;
       const videoId = trailerIds[title];
       if (videoId) {
-        trailerFrame.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0";
+        trailerFrame.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0&end=45";
         trailerPlayer.classList.add("open");
         trailerPlayer.scrollIntoView({ behavior: "smooth", block: "nearest" });
       } else {
