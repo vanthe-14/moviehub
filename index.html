@@ -43,6 +43,8 @@
     .favorite-toggle[aria-pressed="true"] { color: #ff5260; border-color: #ff5260; }
     .favorite-toggle:focus-visible, #favoritesFilter:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
     .section-tools { display: flex; align-items: center; justify-content: flex-end; gap: 14px; flex-wrap: wrap; }
+    .genre-filter { min-width: 190px; padding: 12px 14px; border: 1px solid #656572; border-radius: 5px; background: #24242e; color: #fff; font: inherit; cursor: pointer; }
+    .genre-filter:focus-visible { outline: 3px solid #fff; outline-offset: 3px; }
     #favoritesFilter.active { border-color: #ff5260; color: #ff8b93; }
     .movie[hidden] { display: none !important; }
     .movie-info { padding: 13px; }
@@ -100,6 +102,23 @@
     <div class="section-heading">
       <h2>Phim nổi bật</h2>
       <div class="section-tools">
+        <label for="genreFilter" style="position:absolute;width:1px;height:1px;padding:0;margin:-1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap;border:0;">Lọc theo thể loại</label>
+        <select class="genre-filter" id="genreFilter" aria-label="Lọc phim theo thể loại">
+          <option value="">Tất cả thể loại</option>
+          <option value="Hành động">Hành động</option>
+          <option value="Khoa học viễn tưởng">Khoa học viễn tưởng</option>
+          <option value="Hoạt hình">Hoạt hình</option>
+          <option value="Kinh dị">Kinh dị</option>
+          <option value="Tình cảm">Tình cảm</option>
+          <option value="Tâm lý">Tâm lý</option>
+          <option value="Trinh thám">Trinh thám</option>
+          <option value="Cổ trang">Cổ trang</option>
+          <option value="Thể thao">Thể thao</option>
+          <option value="Hài hước">Hài hước</option>
+          <option value="Gia đình">Gia đình</option>
+          <option value="Siêu anh hùng">Siêu anh hùng</option>
+          <option value="Kiếm hiệp">Kiếm hiệp</option>
+        </select>
         <button class="button-secondary" id="favoritesFilter" type="button" aria-pressed="false">♡ Phim yêu thích (0)</button>
         <span id="searchCount" aria-live="polite">Hiển thị 16 bộ phim</span>
       </div>
@@ -302,6 +321,7 @@
     });
 
     const favoritesFilter = document.getElementById("favoritesFilter");
+    const genreFilter = document.getElementById("genreFilter");
     const favoriteStorageKey = "moviehub-favorites-v1";
     let favoriteTitles = new Set();
     let showFavoritesOnly = false;
@@ -338,27 +358,31 @@
 
     function applyMovieFilters() {
       const query = searchInput.value.trim().toLocaleLowerCase("vi");
+      const selectedGenre = genreFilter.value.toLocaleLowerCase("vi");
       let visible = 0;
       cards.forEach(function (card) {
         const title = card.querySelector("h3")?.textContent.trim() || "";
+        const metadata = card.querySelector(".meta")?.textContent.toLocaleLowerCase("vi") || "";
         const matchesSearch = card.textContent.toLocaleLowerCase("vi").includes(query);
         const matchesFavorite = !showFavoritesOnly || favoriteTitles.has(title);
-        const matches = matchesSearch && matchesFavorite;
+        const matchesGenre = !selectedGenre || metadata.includes(selectedGenre);
+        const matches = matchesSearch && matchesFavorite && matchesGenre;
         card.hidden = !matches;
         if (matches) visible++;
       });
-      if (showFavoritesOnly) {
-        count.textContent = "Yêu thích: hiển thị " + visible + " / " + favoriteTitles.size + " phim";
-      } else if (query) {
-        count.textContent = "Tìm thấy " + visible + " / " + cards.length + " bộ phim";
+      const activeFilters = [query ? "từ khóa" : "", selectedGenre ? "thể loại " + genreFilter.options[genreFilter.selectedIndex].text : "", showFavoritesOnly ? "yêu thích" : ""].filter(Boolean);
+      if (activeFilters.length) {
+        count.textContent = "Hiển thị " + visible + " phim · Lọc: " + activeFilters.join(", ");
       } else {
         count.textContent = "Hiển thị " + visible + " / " + cards.length + " bộ phim";
       }
       empty.textContent = showFavoritesOnly && favoriteTitles.size === 0
         ? "Bạn chưa có phim yêu thích. Nhấn trái tim trên poster để thêm phim nhé!"
         : showFavoritesOnly
-          ? "Không có phim yêu thích phù hợp với từ khóa này."
-          : "Không tìm thấy phim phù hợp. Hãy thử từ khóa khác nhé!";
+          ? "Không có phim yêu thích phù hợp với bộ lọc hiện tại."
+          : selectedGenre
+            ? "Không tìm thấy phim thuộc thể loại này với bộ lọc hiện tại."
+            : "Không tìm thấy phim phù hợp. Hãy thử từ khóa khác nhé!";
       empty.style.display = visible === 0 ? "block" : "none";
     }
 
@@ -389,6 +413,7 @@
     });
 
     searchInput.addEventListener("input", applyMovieFilters);
+    genreFilter.addEventListener("change", applyMovieFilters);
     updateFavoritesUI();
   </script>
 </body>
