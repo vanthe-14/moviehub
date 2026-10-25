@@ -297,6 +297,7 @@
         <p id="detailDescription"></p>
         <div class="detail-actions">
           <button class="button" id="trailerLink" type="button">Xem trailer ▶</button>
+          <a class="button-secondary" id="fullMovieLink" href="https://www.justwatch.com/vn" target="_blank" rel="noopener noreferrer">Tìm nơi xem phim đầy đủ ↗</a>
           <button class="button-secondary" id="detailBack" type="button">Quay lại danh sách</button>
         </div>
         <div class="trailer-player" id="trailerPlayer">
@@ -321,6 +322,7 @@
     const detailTag = document.getElementById("detailTag");
     const detailDescription = document.getElementById("detailDescription");
     const trailerLink = document.getElementById("trailerLink");
+    const fullMovieLink = document.getElementById("fullMovieLink");
     const trailerPlayer = document.getElementById("trailerPlayer");
     const trailerFrame = document.getElementById("trailerFrame");
     const detailClose = document.getElementById("detailClose");
@@ -380,6 +382,8 @@
       if (trailerNote) trailerNote.textContent = "Video được nhúng từ YouTube. Bạn có thể phát hoặc tạm dừng ngay tại đây.";
       trailerLink.textContent = "Xem trailer ▶";
       trailerLink.dataset.title = title;
+      fullMovieLink.href = "https://www.justwatch.com/vn/search?q=" + encodeURIComponent(title);
+      fullMovieLink.setAttribute("aria-label", "Tìm dịch vụ xem phim có bản quyền cho " + title);
       detailOverlay.classList.add("open");
       document.body.style.overflow = "hidden";
       detailClose.focus();
