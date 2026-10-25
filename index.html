@@ -50,6 +50,10 @@
     .detail-copy p { color: #ddd; line-height: 1.7; margin-top: 18px; }
     .detail-copy .meta { line-height: 1.7; }
     .detail-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 24px; }
+    .trailer-player { display: none; width: 100%; margin-top: 22px; }
+    .trailer-player.open { display: block; }
+    .trailer-player iframe { display: block; width: 100%; aspect-ratio: 16 / 9; border: 0; border-radius: 8px; background: #000; }
+    .trailer-note { color: var(--muted); font-size: 12px; margin-top: 8px; }
     .button-secondary { display: inline-block; padding: 12px 18px; border: 1px solid #656572; border-radius: 5px; color: #fff; text-decoration: none; font-weight: 700; background: #24242e; cursor: pointer; }
     .button-secondary:hover { background: #343440; }
     .detail-close { position: absolute; top: 12px; right: 12px; width: 38px; height: 38px; border: 0; border-radius: 50%; background: #30303a; color: white; font-size: 25px; cursor: pointer; }
@@ -170,8 +174,12 @@
         <div id="detailTag"></div>
         <p id="detailDescription"></p>
         <div class="detail-actions">
-          <a class="button" id="trailerLink" href="#" target="_blank" rel="noopener noreferrer">Tìm trailer ▶</a>
+          <button class="button" id="trailerLink" type="button">Xem trailer ▶</button>
           <button class="button-secondary" id="detailBack" type="button">Quay lại danh sách</button>
+        </div>
+        <div class="trailer-player" id="trailerPlayer">
+          <iframe id="trailerFrame" title="Trailer phim" src="" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" referrerpolicy="strict-origin-when-cross-origin" allowfullscreen></iframe>
+          <p class="trailer-note">Video được nhúng từ YouTube. Bạn có thể phát hoặc tạm dừng ngay tại đây.</p>
         </div>
       </div>
     </section>
@@ -190,7 +198,18 @@
     const detailTag = document.getElementById("detailTag");
     const detailDescription = document.getElementById("detailDescription");
     const trailerLink = document.getElementById("trailerLink");
+    const trailerPlayer = document.getElementById("trailerPlayer");
+    const trailerFrame = document.getElementById("trailerFrame");
     const detailClose = document.getElementById("detailClose");
+    const trailerIds = {
+      "Interstellar": "zSWdZVtXT7E",
+      "Inception": "YoHD9XEInc0",
+      "Spider-Man: Across the Spider-Verse": "g4Hbz2jLxvQ",
+      "Dune: Part Two": "Way9Dexny3w",
+      "Inside Out 2": "VWavstJyd配",
+      "The Wild Robot": "njPNg0A9VpY",
+      "Trò Chơi Ảo Giác: Ares (Tron: Ares)": "jp75XWJ3wfk"
+    };
     let lastFocusedCard = null;
 
     function openMovieDetails(card) {
@@ -221,7 +240,10 @@
       if (fallback && fallback.style.display === "grid") {
         detailPoster.style.display = "none";
       }
-      trailerLink.href = "https://www.youtube.com/results?search_query=" + encodeURIComponent(title + " trailer");
+      trailerPlayer.classList.remove("open");
+      trailerFrame.src = "";
+      trailerLink.textContent = "Xem trailer ▶";
+      trailerLink.dataset.title = title;
       detailOverlay.classList.add("open");
       document.body.style.overflow = "hidden";
       detailClose.focus();
@@ -230,6 +252,8 @@
 
     function closeMovieDetails() {
       detailOverlay.classList.remove("open");
+      trailerFrame.src = "";
+      trailerPlayer.classList.remove("open");
       document.body.style.overflow = "";
       if (lastFocusedCard) lastFocusedCard.focus();
     }
@@ -246,6 +270,17 @@
           openMovieDetails(card);
         }
       });
+    });
+    trailerLink.addEventListener("click", function () {
+      const title = trailerLink.dataset.title || detailTitle.textContent;
+      const videoId = trailerIds[title];
+      if (videoId) {
+        trailerFrame.src = "https://www.youtube-nocookie.com/embed/" + videoId + "?autoplay=1&rel=0";
+        trailerPlayer.classList.add("open");
+        trailerPlayer.scrollIntoView({ behavior: "smooth", block: "nearest" });
+      } else {
+        window.open("https://www.youtube.com/results?search_query=" + encodeURIComponent(title + " official trailer"), "_blank", "noopener,noreferrer");
+      }
     });
     detailClose.addEventListener("click", closeMovieDetails);
     document.getElementById("detailBack").addEventListener("click", closeMovieDetails);
